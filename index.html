@@ -26,6 +26,9 @@
     <meta name="twitter:description" content="Você está convidado para celebrar o primeiro aniversário da Olivia! 🎂 Toque para abrir o convite." />
     <meta name="twitter:image" content="https://convite-olivia.pages.dev/envelope.jpg" />
 
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
     <style>
       * {
         margin: 0;
@@ -473,24 +476,54 @@
       let musicPlaying = false;
       let envelopeOpened = false;
 
-      // Criar confetes
-      function createConfetti() {
-        const colors = ['#ff69b4', '#ff1493', '#ffc0cb', '#ffb6c1', '#ff85c1', '#ffd700', '#ffb347'];
-        for (let i = 0; i < 60; i++) {
-          setTimeout(() => {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.animationDelay = Math.random() * 3 + 's';
-            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-            confetti.style.width = (Math.random() * 8 + 6) + 'px';
-            confetti.style.height = confetti.style.width;
-            document.body.appendChild(confetti);
+      // Explosão de confetes usando canvas-confetti
+      function fireConfetti() {
+        const duration = 3000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
 
-            setTimeout(() => confetti.remove(), 5000);
-          }, i * 25);
+        function randomInRange(min, max) {
+          return Math.random() * (max - min) + min;
         }
+
+        const interval = setInterval(function() {
+          const timeLeft = animationEnd - Date.now();
+
+          if (timeLeft <= 0) {
+            return clearInterval(interval);
+          }
+
+          const particleCount = 50 * (timeLeft / duration);
+          
+          // Explosão do lado esquerdo
+          confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+            colors: ['#ff69b4', '#ff1493', '#ffc0cb', '#ffb6c1', '#ff85c1', '#ffd700', '#ffb347']
+          });
+          
+          // Explosão do lado direito
+          confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+            colors: ['#ff69b4', '#ff1493', '#ffc0cb', '#ffb6c1', '#ff85c1', '#ffd700', '#ffb347']
+          });
+        }, 250);
+      }
+
+      // Explosão de confetes ao clicar/tocar na tela
+      function fireConfettiOnClick(event) {
+        const x = event.clientX / window.innerWidth;
+        const y = event.clientY / window.innerHeight;
+        
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { x, y },
+          colors: ['#ff69b4', '#ff1493', '#ffc0cb', '#ffb6c1', '#ff85c1', '#ffd700', '#ffb347']
+        });
       }
 
       // Toggle música de fundo
@@ -540,22 +573,43 @@
 
         // Criar confetes após um delay
         setTimeout(() => {
-          createConfetti();
+          fireConfetti();
         }, 800);
       });
 
-      // Som ao clicar na carta aberta
+      // Som e confetes ao clicar na carta aberta
       letter.addEventListener("click", (e) => {
         if (envelopeOpened) {
           e.stopPropagation();
           clickSound.currentTime = 0;
           clickSound.play().catch(e => console.log('Erro ao tocar som:', e));
           
+          // Explosão de confetes no ponto do clique
+          fireConfettiOnClick(e);
+          
           // Efeito visual extra
           letter.style.transform = 'translate(-50%, -50%) translateY(-15px) scale(1.03)';
           setTimeout(() => {
             letter.style.transform = '';
           }, 300);
+        }
+      });
+
+      // Confetes ao tocar em qualquer lugar após abrir o envelope
+      document.body.addEventListener("click", (e) => {
+        if (envelopeOpened && !e.target.closest('#audioToggle')) {
+          fireConfettiOnClick(e);
+        }
+      });
+
+      // Suporte para touch em dispositivos móveis
+      document.body.addEventListener("touchstart", (e) => {
+        if (envelopeOpened && !e.target.closest('#audioToggle')) {
+          const touch = e.touches[0];
+          fireConfettiOnClick({
+            clientX: touch.clientX,
+            clientY: touch.clientY
+          });
         }
       });
 
