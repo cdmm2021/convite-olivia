@@ -34,10 +34,8 @@
       }
 
       html {
-        overflow: hidden;
         height: 100vh;
         width: 100vw;
-        position: fixed;
       }
 
       body {
@@ -47,13 +45,9 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        min-height: 100vh;
         width: 100vw;
-        overflow: hidden;
         font-family: 'Arial', sans-serif;
-        position: fixed;
-        top: 0;
-        left: 0;
       }
 
       /* Partículas de confete animadas */
@@ -90,7 +84,7 @@
         align-items: center;
         perspective: 1500px;
         overflow: hidden;
-        touch-action: none;
+        touch-action: pinch-zoom;
       }
 
       /* Envelope Container */
