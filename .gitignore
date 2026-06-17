@@ -1,0 +1,15 @@
+# Arquivos temporários
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Node modules (caso adicione no futuro)
+node_modules/
+
+# Arquivos de sistema
+desktop.ini

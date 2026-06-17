@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Áudio - Convite Olivia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #fbdbeb 0%, #ffc9e3 100%);
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #ff1493;
+            text-align: center;
+        }
+        button {
+            background: #ff1493;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #ff69b4;
+            transform: scale(1.05);
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            min-height: 50px;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .info {
+            color: #666;
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Gerador de Áudio Placeholder</h1>
+        <p>Clique nos botões abaixo para gerar os arquivos de áudio necessários para o convite:</p>
+        
+        <button onclick="generateClick()">🔊 Gerar click.mp3</button>
+        <button onclick="generateOpen()">📬 Gerar open.mp3</button>
+        <button onclick="generateBackground()">🎵 Gerar background.mp3</button>
+        <button onclick="generateAll()">✨ Gerar Todos</button>
+        
+        <div class="status" id="status">
+            Aguardando ação...
+        </div>
+
+        <div class="info">
+            <strong>ℹ️ Informação:</strong><br>
+            Estes são áudios placeholder gerados com Web Audio API. Eles funcionam para testar o projeto, mas você pode substituí-los por áudios personalizados depois.
+        </div>
+    </div>
+
+    <script>
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+        function updateStatus(message, isSuccess = false) {
+            const status = document.getElementById('status');
+            status.innerHTML = message;
+            if (isSuccess) {
+                status.className = 'status success';
+            } else {
+                status.className = 'status';
+            }
+        }
+
+        // Gerar som de clique (beep curto)
+        async function generateClick() {
+            updateStatus('Gerando click.mp3...');
+            const audioContext = new AudioContext();
+            const duration = 0.1;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(1, duration * sampleRate, sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < buffer.length; i++) {
+                const t = i / sampleRate;
+                data[i] = Math.sin(2 * Math.PI * 800 * t) * Math.exp(-t * 10) * 0.3;
+            }
+
+            await exportAudio(buffer, 'click.mp3', sampleRate);
+            updateStatus('✅ click.mp3 gerado com sucesso!', true);
+        }
+
+        // Gerar som de abertura (whoosh)
+        async function generateOpen() {
+            updateStatus('Gerando open.mp3...');
+            const audioContext = new AudioContext();
+            const duration = 0.8;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(1, duration * sampleRate, sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < buffer.length; i++) {
+                const t = i / sampleRate;
+                const freq = 200 + (1000 * t);
+                data[i] = Math.sin(2 * Math.PI * freq * t) * (1 - t) * 0.3;
+            }
+
+            await exportAudio(buffer, 'open.mp3', sampleRate);
+            updateStatus('✅ open.mp3 gerado com sucesso!', true);
+        }
+
+        // Gerar música de fundo (melodia simples)
+        async function generateBackground() {
+            updateStatus('Gerando background.mp3 (isso pode levar alguns segundos)...');
+            const audioContext = new AudioContext();
+            const duration = 10; // 10 segundos de loop
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(2, duration * sampleRate, sampleRate);
+            
+            // Notas da melodia "Happy Birthday" simplificada
+            const notes = [
+                {freq: 262, start: 0, duration: 0.5},    // C
+                {freq: 262, start: 0.5, duration: 0.5},  // C
+                {freq: 294, start: 1, duration: 1},      // D
+                {freq: 262, start: 2, duration: 1},      // C
+                {freq: 349, start: 3, duration: 1},      // F
+                {freq: 330, start: 4, duration: 2},      // E
+                {freq: 262, start: 6, duration: 0.5},    // C
+                {freq: 262, start: 6.5, duration: 0.5},  // C
+                {freq: 294, start: 7, duration: 1},      // D
+                {freq: 262, start: 8, duration: 1},      // C
+                {freq: 392, start: 9, duration: 1},      // G
+            ];
+
+            for (let channel = 0; channel < 2; channel++) {
+                const data = buffer.getChannelData(channel);
+                
+                notes.forEach(note => {
+                    const startSample = Math.floor(note.start * sampleRate);
+                    const endSample = Math.floor((note.start + note.duration) * sampleRate);
+                    
+                    for (let i = startSample; i < endSample && i < data.length; i++) {
+                        const t = (i - startSample) / sampleRate;
+                        const envelope = Math.min(1, Math.max(0, 1 - t / note.duration));
+                        data[i] += Math.sin(2 * Math.PI * note.freq * t) * envelope * 0.2;
+                    }
+                });
+            }
+
+            await exportAudio(buffer, 'background.mp3', sampleRate);
+            updateStatus('✅ background.mp3 gerado com sucesso!', true);
+        }
+
+        // Gerar todos os áudios
+        async function generateAll() {
+            updateStatus('Gerando todos os arquivos de áudio...');
+            await generateClick();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await generateOpen();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await generateBackground();
+            updateStatus('✅ Todos os arquivos foram gerados com sucesso! Você pode fechar esta página.', true);
+        }
+
+        // Exportar áudio como MP3 (usando WAV como fallback)
+        async function exportAudio(buffer, filename, sampleRate) {
+            // Converter para WAV
+            const wav = audioBufferToWav(buffer);
+            const blob = new Blob([wav], { type: 'audio/wav' });
+            
+            // Download
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename.replace('.mp3', '.wav'); // Salvando como WAV
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Converter AudioBuffer para WAV
+        function audioBufferToWav(buffer) {
+            const length = buffer.length * buffer.numberOfChannels * 2;
+            const arrayBuffer = new ArrayBuffer(44 + length);
+            const view = new DataView(arrayBuffer);
+            const channels = [];
+            let offset = 0;
+            let pos = 0;
+
+            // WAV header
+            setUint32(0x46464952); // "RIFF"
+            setUint32(36 + length); // file length
+            setUint32(0x45564157); // "WAVE"
+            setUint32(0x20746d66); // "fmt " chunk
+            setUint32(16); // length = 16
+            setUint16(1); // PCM (uncompressed)
+            setUint16(buffer.numberOfChannels);
+            setUint32(buffer.sampleRate);
+            setUint32(buffer.sampleRate * 2 * buffer.numberOfChannels); // avg. bytes/sec
+            setUint16(buffer.numberOfChannels * 2); // block-align
+            setUint16(16); // 16-bit
+            setUint32(0x61746164); // "data" - chunk
+            setUint32(length); // chunk length
+
+            // Write interleaved data
+            for (let i = 0; i < buffer.numberOfChannels; i++) {
+                channels.push(buffer.getChannelData(i));
+            }
+
+            while (pos < buffer.length) {
+                for (let i = 0; i < buffer.numberOfChannels; i++) {
+                    let sample = Math.max(-1, Math.min(1, channels[i][pos]));
+                    sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+                    view.setInt16(44 + offset, sample, true);
+                    offset += 2;
+                }
+                pos++;
+            }
+
+            return arrayBuffer;
+
+            function setUint16(data) {
+                view.setUint16(pos, data, true);
+                pos += 2;
+            }
+
+            function setUint32(data) {
+                view.setUint32(pos, data, true);
+                pos += 4;
+            }
+        }
+    </script>
+</body>
+</html>

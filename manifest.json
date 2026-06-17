@@ -1,0 +1,16 @@
+{
+  "name": "Convite da Olivia",
+  "short_name": "Olivia 1 Ano",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fbdbeb",
+  "theme_color": "#fbdbeb",
+  "icons": [
+    {
+      "src": "icone.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

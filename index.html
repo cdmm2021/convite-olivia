@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Convite Especial - Olivia</title>
+
+    <!-- LINK PARA O MANIFEST -->
+    <link rel="manifest" href="./manifest.json" />
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./icone.png" />
+    <!-- Meta tag para cor do tema no celular -->
+    <meta name="theme-color" content="#fbdbeb" />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        overflow: hidden;
+        height: 100vh;
+        width: 100vw;
+        position: fixed;
+        touch-action: none;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #fbdbeb 0%, #ffc9e3 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+        font-family: 'Arial', sans-serif;
+        position: fixed;
+        top: 0;
+        left: 0;
+        touch-action: none;
+      }
+
+      /* Partículas de confete animadas */
+      .confetti {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background-color: #ff69b4;
+        position: absolute;
+        animation: confetti-fall 3s linear infinite;
+        opacity: 0;
+      }
+
+      @keyframes confetti-fall {
+        0% {
+          transform: translateY(-100vh) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(100vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      .container {
+        position: fixed;
+        width: 100%;
+        max-width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        perspective: 1500px;
+        overflow: hidden;
+        touch-action: none;
+      }
+
+      /* Envelope Container */
+      .envelope-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        max-height: none;
+        cursor: pointer;
+        transform-style: preserve-3d;
+        transition: transform 0.6s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .envelope-wrapper > * {
+        max-width: 90vw;
+        max-height: 90vh;
+        width: auto;
+        height: auto;
+      }
+
+      .envelope-wrapper:hover {
+        transform: scale(1.02);
+      }
+
+      .envelope-wrapper.opening {
+        pointer-events: none;
+      }
+
+      /* Envelope Base */
+      .envelope-base {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 15px;
+        overflow: visible;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .envelope-base img {
+        max-width: 90vw;
+        max-height: 90vh;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        display: block;
+        border-radius: 15px;
+      }
+
+      /* Aba do envelope (parte que abre) - REMOVIDA */
+      .envelope-flap {
+        display: none;
+      }
+
+      /* Carta/Convite */
+      .letter {
+        position: absolute;
+        max-width: 90vw;
+        max-height: 90vh;
+        width: auto;
+        height: auto;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%) translateY(100%) scale(0.9);
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        transition: all 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        opacity: 0;
+        z-index: 5;
+        overflow: visible;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .letter img {
+        max-width: 90vw;
+        max-height: 90vh;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        display: block;
+        border-radius: 15px;
+      }
+
+      .envelope-wrapper.opening .letter {
+        transform: translate(-50%, -50%) translateY(0) scale(1);
+        opacity: 1;
+        z-index: 20;
+        animation: letter-float 3s ease-in-out infinite 1.5s;
+      }
+
+      @keyframes letter-float {
+        0%, 100% {
+          transform: translate(-50%, -50%) translateY(0) scale(1);
+        }
+        50% {
+          transform: translate(-50%, -50%) translateY(-10px) scale(1.01);
+        }
+      }
+
+      /* Selo/Lacre do envelope - REMOVIDO */
+      .envelope-seal {
+        display: none;
+      }
+
+      /* Instrução de toque - REMOVIDA */
+      .instrucao {
+        display: none;
+      }
+
+      /* Controles de áudio */
+      .audio-control {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid #ff69b4;
+        border-radius: 50%;
+        width: 55px;
+        height: 55px;
+        font-size: 26px;
+        cursor: pointer;
+        z-index: 100;
+        box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .audio-control:hover {
+        transform: scale(1.1);
+        background: rgba(255, 255, 255, 1);
+        box-shadow: 0 6px 16px rgba(255, 105, 180, 0.4);
+      }
+
+      .audio-control:active {
+        transform: scale(0.95);
+      }
+
+      /* Efeito de brilho no envelope */
+      .envelope-wrapper::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+          45deg,
+          transparent 30%,
+          rgba(255, 255, 255, 0.3) 50%,
+          transparent 70%
+        );
+        transform: rotate(45deg);
+        animation: shine 3s infinite;
+        pointer-events: none;
+        z-index: 30;
+      }
+
+      @keyframes shine {
+        0% {
+          transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        }
+        100% {
+          transform: translateX(100%) translateY(100%) rotate(45deg);
+        }
+      }
+
+      .envelope-wrapper.opening::before {
+        animation: none;
+      }
+
+      /* Responsividade */
+      @media (max-width: 768px) {
+        body {
+          overflow: hidden;
+        }
+
+        .container {
+          max-width: 100%;
+          padding: 0;
+          height: 100vh;
+        }
+
+        .envelope-wrapper {
+          width: 100%;
+          max-width: 100%;
+          height: 100vh;
+          max-height: 100vh;
+        }
+
+        .envelope-wrapper > * {
+          max-width: 100vw;
+          max-height: 100vh;
+        }
+
+        .envelope-base {
+          width: 100%;
+          height: 100%;
+          border-radius: 0;
+        }
+
+        .envelope-base img {
+          max-width: 100vw;
+          max-height: 100vh;
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          border-radius: 0;
+        }
+
+        .letter {
+          width: 100%;
+          height: 100%;
+          max-width: 100vw;
+          max-height: 100vh;
+          border-radius: 0;
+        }
+
+        .letter img {
+          max-width: 100vw;
+          max-height: 100vh;
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          border-radius: 0;
+        }
+
+        .envelope-flap {
+          border-radius: 0;
+        }
+
+        .instrucao {
+          font-size: 18px;
+          padding: 12px 24px;
+          bottom: 30px;
+        }
+
+        .audio-control {
+          width: 55px;
+          height: 55px;
+          font-size: 26px;
+          top: 20px;
+          right: 20px;
+        }
+
+        .envelope-seal {
+          width: 70px;
+          height: 70px;
+          font-size: 32px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .instrucao {
+          font-size: 16px;
+          padding: 10px 20px;
+          bottom: 25px;
+        }
+
+        .audio-control {
+          width: 50px;
+          height: 50px;
+          font-size: 24px;
+          top: 15px;
+          right: 15px;
+        }
+
+        .envelope-seal {
+          width: 60px;
+          height: 60px;
+          font-size: 28px;
+        }
+      }
+
+      /* Orientação paisagem em mobile */
+      @media (max-height: 600px) and (orientation: landscape) {
+        .envelope-wrapper {
+          max-width: 300px;
+          width: 50%;
+        }
+
+        .instrucao {
+          font-size: 12px;
+          padding: 6px 12px;
+          bottom: 5px;
+        }
+
+        .audio-control {
+          width: 40px;
+          height: 40px;
+          font-size: 20px;
+        }
+      }
+
+      /* Ajustes para telas muito pequenas */
+      @media (max-width: 360px) {
+        .envelope-wrapper {
+          width: 90%;
+          max-width: 300px;
+        }
+
+        .instrucao {
+          font-size: 13px;
+          padding: 7px 14px;
+        }
+      }
+
+      /* Prevenir zoom em inputs no iOS */
+      @media (max-width: 768px) {
+        button {
+          font-size: 16px;
+        }
+      }
+
+      /* Melhorar toque em dispositivos móveis */
+      @media (hover: none) and (pointer: coarse) {
+        .envelope-wrapper:hover {
+          transform: none;
+        }
+
+        .envelope-wrapper:active {
+          transform: scale(0.98);
+        }
+
+        .audio-control:hover {
+          transform: none;
+        }
+
+        .audio-control:active {
+          transform: scale(0.9);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Botão de controle de áudio -->
+    <button class="audio-control" id="audioToggle" title="Música de fundo">🔊</button>
+
+    <div class="container">
+      <div class="envelope-wrapper" id="envelopeWrapper">
+        <!-- Aba do envelope -->
+        <div class="envelope-flap"></div>
+        
+        <!-- Selo/Lacre -->
+        <div class="envelope-seal">💌</div>
+        
+        <!-- Base do envelope -->
+        <div class="envelope-base">
+          <img src="envelope.jpg" alt="Envelope" />
+        </div>
+        
+        <!-- Carta/Convite -->
+        <div class="letter" id="letter">
+          <img src="convite.jpg" alt="Convite da Olivia" />
+        </div>
+      </div>
+
+      <!-- Instrução -->
+      <div class="instrucao" id="instrucao">👆 Toque para abrir!</div>
+    </div>
+
+    <!-- Áudios -->
+    <audio id="bgMusic" loop>
+      <source src="background.wav" type="audio/wav">
+    </audio>
+    <audio id="openSound">
+      <source src="open.wav" type="audio/wav">
+    </audio>
+    <audio id="clickSound">
+      <source src="click.wav" type="audio/wav">
+    </audio>
+
+    <script>
+      // Elementos
+      const envelopeWrapper = document.getElementById("envelopeWrapper");
+      const letter = document.getElementById("letter");
+      const instrucao = document.getElementById("instrucao");
+      const bgMusic = document.getElementById("bgMusic");
+      const openSound = document.getElementById("openSound");
+      const clickSound = document.getElementById("clickSound");
+      const audioToggle = document.getElementById("audioToggle");
+
+      let musicPlaying = false;
+      let envelopeOpened = false;
+
+      // Criar confetes
+      function createConfetti() {
+        const colors = ['#ff69b4', '#ff1493', '#ffc0cb', '#ffb6c1', '#ff85c1', '#ffd700', '#ffb347'];
+        for (let i = 0; i < 60; i++) {
+          setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDelay = Math.random() * 3 + 's';
+            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            confetti.style.width = (Math.random() * 8 + 6) + 'px';
+            confetti.style.height = confetti.style.width;
+            document.body.appendChild(confetti);
+
+            setTimeout(() => confetti.remove(), 5000);
+          }, i * 25);
+        }
+      }
+
+      // Toggle música de fundo
+      audioToggle.addEventListener('click', () => {
+        if (musicPlaying) {
+          bgMusic.pause();
+          audioToggle.textContent = '🔇';
+          musicPlaying = false;
+        } else {
+          bgMusic.play().catch(e => console.log('Erro ao tocar música:', e));
+          audioToggle.textContent = '🔊';
+          musicPlaying = true;
+        }
+        clickSound.currentTime = 0;
+        clickSound.play().catch(e => console.log('Erro ao tocar som:', e));
+      });
+
+      // Prevenir scroll em mobile
+      document.body.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+      }, { passive: false });
+
+      // Abrir envelope
+      envelopeWrapper.addEventListener("click", () => {
+        if (envelopeOpened) return;
+        
+        envelopeOpened = true;
+        
+        // Tocar som de abertura
+        openSound.play().catch(e => console.log('Erro ao tocar som:', e));
+        
+        // Iniciar música de fundo se ainda não estiver tocando
+        if (!musicPlaying) {
+          bgMusic.play().catch(e => console.log('Erro ao tocar música:', e));
+          audioToggle.textContent = '🔊';
+          musicPlaying = true;
+        }
+
+        // Animações
+        envelopeWrapper.classList.add("opening");
+        instrucao.classList.add("hidden");
+
+        // Criar confetes após um delay
+        setTimeout(() => {
+          createConfetti();
+        }, 800);
+      });
+
+      // Som ao clicar na carta aberta
+      letter.addEventListener("click", (e) => {
+        if (envelopeOpened) {
+          e.stopPropagation();
+          clickSound.currentTime = 0;
+          clickSound.play().catch(e => console.log('Erro ao tocar som:', e));
+          
+          // Efeito visual extra
+          letter.style.transform = 'translate(-50%, -50%) translateY(-15px) scale(1.03)';
+          setTimeout(() => {
+            letter.style.transform = '';
+          }, 300);
+        }
+      });
+
+      // REGISTRO DO SERVICE WORKER
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("./sw.js")
+            .then((reg) => console.log("Service Worker registrado!", reg))
+            .catch((err) =>
+              console.error("Erro no registro do Service Worker", err),
+            );
+        });
+      }
+    </script>
+  </body>
+</html>
