@@ -1,16 +1,27 @@
 {
-  "name": "Convite da Olivia",
+  "name": "Convite da Olivia - 1 Ano",
   "short_name": "Olivia 1 Ano",
-  "start_url": "./index.html",
+  "description": "Convite especial para o primeiro aniversário da Olivia",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#fbdbeb",
   "theme_color": "#fbdbeb",
   "icons": [
     {
-      "src": "icone.png",
+      "src": "/icone.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/icone.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
     }
-  ]
+  ],
+  "categories": ["lifestyle", "social"],
+  "prefer_related_applications": false
 }
