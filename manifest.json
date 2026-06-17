@@ -4,7 +4,7 @@
   "description": "Convite especial para o primeiro aniversário da Olivia",
   "start_url": "/",
   "scope": "/",
-  "display": "standalone",
+  "display": "fullscreen",
   "orientation": "portrait",
   "background_color": "#fbdbeb",
   "theme_color": "#fbdbeb",
