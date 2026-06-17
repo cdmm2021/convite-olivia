@@ -2,7 +2,7 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Convite Especial - Olivia</title>
 
     <!-- LINK PARA O MANIFEST -->
@@ -38,7 +38,6 @@
         height: 100vh;
         width: 100vw;
         position: fixed;
-        touch-action: none;
       }
 
       body {
@@ -55,7 +54,6 @@
         position: fixed;
         top: 0;
         left: 0;
-        touch-action: none;
       }
 
       /* Partículas de confete animadas */
@@ -522,10 +520,15 @@
         clickSound.play().catch(e => console.log('Erro ao tocar som:', e));
       });
 
-      // Prevenir scroll em mobile
-      document.body.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-      }, { passive: false });
+      // Permitir zoom com pinch, mas prevenir scroll
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', (e) => {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+          e.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, false);
 
       // Abrir envelope
       envelopeWrapper.addEventListener("click", () => {
